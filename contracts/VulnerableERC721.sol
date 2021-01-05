@@ -225,11 +225,6 @@ contract ERC721 is Context, ERC165, IERC721, IERC721Metadata, IERC721Enumerable 
     /**
      * @dev See {IERC721-transferFrom}.
      */
-    /// if_succeeds {:msg "From is never 0"}  from != address(0);
-    /// if_succeeds {:msg "Authorized user."}  let oldOwner := old(ownerOf(tokenId)) in msg.sender == oldOwner || getApproved(tokenId) == msg.sender || isApprovedForAll(oldOwner, msg.sender);
-    /// if_succeeds {:msg "Correct from."}  from == old(ownerOf(tokenId));
-    /// if_succeeds {:msg "Correct effect."}  to == ownerOf(tokenId);
-    /// if_succeeds {:msg "Can't destroy NFTs."}  to != address(0);
     function transferFrom(address from, address to, uint256 tokenId) public virtual override {
         //solhint-disable-next-line max-line-length
         require(_isApprovedOrOwner(_msgSender(), tokenId), "ERC721: transfer caller is not owner nor approved");
