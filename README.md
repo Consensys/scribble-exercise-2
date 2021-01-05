@@ -141,3 +141,26 @@ There's quite a bit going on in this command so lets quickly unpack it:
 After a short while, you should see some issues prop up. Which property was violated?
 
 Now knowing which property was violated, can you see where in the code the bug was introduced :)?
+
+### Finding the bug more manually
+
+The above `mythx` command we ran does sereral things under the hood:
+
+1) Instrument the target file (and potentially any dependencies)
+
+2) Flatten the instrumented target file (and all its dependencies) into a single Solidity file
+
+3) Submit the flat solidity file to the API for analysis.
+
+4) Map the resulting failures in the **flattened** Solidity file into violated annotations in the **original** file.
+
+Sometimes it may be useful to do instrumentation and analysis separately. (for example when debugging, or in case you want to see the instrumented file. You can do this with the following 2 commands:
+
+```
+# Instrument the files in-place
+scribble --arm -m files contracts/VulnerableERC721.sol --compiler-version 0.6.2
+# Submit the instrumented target contract for analysis
+mythx --format simple analyze contracts/VulnerableERC721.sol --check-properties --solc-version 0.6.2
+```
+
+After you run the first command you can inspec `contracts/VulnerableERC721.sol` to see what the instrumented code looks like.
