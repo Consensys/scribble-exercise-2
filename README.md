@@ -1,11 +1,13 @@
 # Scribble Exercise 2
 
 In this exercise we're going to have a look at a vulnerable ERC721 smart
-contract. The contract in question (`contracts/VulnerableERC721.sol`) is
+contract. The contract in question ([contracts/VulnerableERC721.sol](https://github.com/ConsenSys/scribble-exercise-2/blob/master/contracts/VulnerableERC721.sol)) is
 copied almost verbatim from
-https://github.com/OpenZeppelin/openzeppelin-contracts, except that the
-imports have been adjusted a little, a bug has been inserted, and the `_mint`
-function has been made public (you'll see later why).
+https://github.com/OpenZeppelin/openzeppelin-contracts, except that:
+
+  1) the imports have been adjusted a little
+  2) a bug has been inserted
+  3) and the `_mint` function has been made public to give the MythX engine more room to play.
 
 We'll use Scribble to annotate it with properties, and use the MythX service (and more specifically the fuzzing engine behind it) to automatically check the properties (and find the bug 🐛).
 
@@ -23,11 +25,11 @@ MythX Dashboard -> https://dashboard.mythx.io
 # We'll need the mythx-cli client:
 pip3 install mythx-cli
 
-# Make sure to use node 10-12
+# Make sure to use node 12-14
 npm install scribble --global
 npm install truffle --global
-npm install ganache-cli --global
 ```
+Also you will need a **developer MythX account** and the associated API key.
 
 ### Setting up the target
 
@@ -38,7 +40,9 @@ cd scribble-exercise-2
 
 
 ### Finding the vulnerability
-The vulnerability is reachable from the `transferFrom()` function. To find it we will add some specs to this function. A good source of specs is the docstring above `IERC721.transferFrom`:
+The vulnerability can be triggered from the [`transferFrom()`](https://github.com/ConsenSys/scribble-exercise-2/blob/master/contracts/VulnerableERC721.sol#L228) function.
+
+To find it we will add some specs to `transferFrom()`. A good source of specs is the docstring above [`IERC721.transferFrom`](https://github.com/ConsenSys/scribble-exercise-2/blob/master/contracts/IERC721.sol#L40):
 ```
     /**
      * @dev Transfers `tokenId` token from `from` to `to`.
@@ -56,6 +60,7 @@ The vulnerability is reachable from the `transferFrom()` function. To find it we
      */
     function transferFrom(address from, address to, uint256 tokenId) external;
 ```
+This docstring includes some informal specification of how `transferFrom()` should behave. We will turn these into formal Scribble annotations.
 
 ### Adding annotations
 
@@ -91,6 +96,8 @@ We can extract the following specs from the above docstring:
         ...
     }
 </pre>
+
+Note the use of `old()` here to talk about the owner of `tokenId` **before** the transfer was executed.
 </details>
 
 <details>
@@ -103,12 +110,11 @@ We can extract the following specs from the above docstring:
     }
 </pre>
 
-Note the use of `old()` here to talk about the owner of `tokenId` **before** the transfer was executed.
 </details>
 
 ### Finding the bug using fuzzing (with MythX)
 
-To find the bug, make sure first you have added your mythx api key to your environment:
+To find the bug, make sure first you have added your MythX API key to your environment:
 
 ```
 export MYTHX_API_KEY=<your key>
@@ -132,4 +138,6 @@ There's quite a bit going on in this command so lets quickly unpack it:
  * `--scribble` tells `mythx-cli` to automatically run `scribble` on the target contracts to instrument them, before submitting to the API
  * `--solc-version 0.6.2` - mythx-cli will complain if you dont' explicitly give it the Solidity version
 
-After a short while, you should see some issues prop up. Which property was violated? Now knowing which property was violated, can you see where in the code the bug was introduced :)?
+After a short while, you should see some issues prop up. Which property was violated?
+
+Now knowing which property was violated, can you see where in the code the bug was introduced :)?
