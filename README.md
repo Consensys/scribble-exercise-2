@@ -27,8 +27,8 @@ pip3 install mythx-cli
 
 # Make sure to use node 12-14
 npm install eth-scribble --global
-npm install truffle --global
 ```
+
 Also you will need a **developer MythX account** and the associated API key.
 
 ### Setting up the target
