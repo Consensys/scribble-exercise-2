@@ -6,7 +6,7 @@ copied almost verbatim from
 https://github.com/OpenZeppelin/openzeppelin-contracts, except that:
 
   1) the imports have been adjusted a little
-  2) a bug has been inserted
+  2) a bug has been inserted somnewhere
   3) and the `_mint` function has been made public to give the MythX engine more room to play.
 
 We'll use Scribble to annotate it with properties, and use the MythX service (and more specifically the fuzzing engine behind it) to automatically check the properties (and find the bug 🐛).
