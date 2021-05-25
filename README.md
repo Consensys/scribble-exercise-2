@@ -69,7 +69,7 @@ We can extract the following specs from the above docstring:
 <summary> If the transfer succeeds, then `from` is not 0.</summary>
 <br>
 <pre>
-    /// if_succeeds {:msg "From is never 0"}  from != address(0);
+    /// #if_succeeds {:msg "From is never 0"}  from != address(0);
     function transferFrom(address from, address to, uint256 tokenId) public virtual override {
         ...
     }
@@ -80,7 +80,7 @@ We can extract the following specs from the above docstring:
 <summary> If the transfer succeeds then `to` is not 0. (i.e. you can't destroy NFTs).</summary>
 <br>
 <pre>
-    /// if_succeeds {:msg "Can't destroy NFTs."}  to != address(0);
+    /// #if_succeeds {:msg "Can't destroy NFTs."}  to != address(0);
     function transferFrom(address from, address to, uint256 tokenId) public virtual override {
         ...
     }
@@ -91,7 +91,7 @@ We can extract the following specs from the above docstring:
 <summary> If the transfer succeeds then `tokenId` must be owned by `from`.</summary>
 <br>
 <pre>
-    /// if_succeeds {:msg "Correct from."}  from == old(ownerOf(tokenId));
+    /// #if_succeeds {:msg "Correct from."}  from == old(ownerOf(tokenId));
     function transferFrom(address from, address to, uint256 tokenId) public virtual override {
         ...
     }
@@ -104,7 +104,7 @@ Note the use of `old()` here to talk about the owner of `tokenId` **before** the
 <summary> If the transfer succeeds then the caller must be authorized to perform the transfer. I.e. either 1) the caller is `from` or 2) the caller is approved for this token or 3) the caller is an authorized operator for `from`.</summary>
 <br>
 <pre>
-    /// if_succeeds {:msg "Authorized user."}  let oldOwner := old(ownerOf(tokenId)) in msg.sender == oldOwner || getApproved(tokenId) == msg.sender || isApprovedForAll(oldOwner, msg.sender);
+    /// #if_succeeds {:msg "Authorized user."}  let oldOwner := old(ownerOf(tokenId)) in msg.sender == oldOwner || getApproved(tokenId) == msg.sender || isApprovedForAll(oldOwner, msg.sender);
     function transferFrom(address from, address to, uint256 tokenId) public virtual override {
         ...
     }
@@ -124,10 +124,10 @@ And then you can run:
 ```
 mythx \
     --format simple \
-    analyze contracts/VulnerableERC721.sol \
+    analyze --mode standard contracts/VulnerableERC721.sol \
     --check-properties \
     --scribble \
-    --solc-version 0.6.2
+    --solc-version 0.6.2 
 ```
 
 There's quite a bit going on in this command so lets quickly unpack it:
